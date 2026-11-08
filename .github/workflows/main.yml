@@ -1,0 +1,41 @@
+name: Build Resolume plugins
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -B build -A x64
+      - name: Build
+        run: cmake --build build --config Release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Plugins-Windows
+          path: build/out/*.dll
+
+  macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure (universal arm64 + x86_64)
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Ad-hoc sign and zip
+        run: |
+          cd build/out
+          for b in LaserBeams LedBorder; do
+            codesign --force --deep -s - $b.bundle
+            lipo -info $b.bundle/Contents/MacOS/$b
+          done
+          ditto -c -k --keepParent LaserBeams.bundle LaserBeams-macOS.zip
+          ditto -c -k --keepParent LedBorder.bundle LedBorder-macOS.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Plugins-macOS
+          path: build/out/*-macOS.zip
