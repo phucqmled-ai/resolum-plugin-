@@ -613,6 +613,10 @@ FFResult LedBorder::SetFloatParameter( unsigned int index, float value )
 	case PT_EFFECT_CHANGE: effectChange = value; break;
 	case PT_COLOR_CHANGE:  colorChange = value; break;
 	case PT_TRANSPARENT:   transparent = value > 0.5f; break;
+	case PT_FFT:
+		// FFT data arrives as buffer elements; the host still sets a default here,
+		// and refusing it would make the host destroy the instance.
+		break;
 	default:
 		return FF_FAIL;
 	}

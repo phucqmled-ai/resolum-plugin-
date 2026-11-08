@@ -513,6 +513,10 @@ FFResult LaserBeams::SetFloatParameter( unsigned int index, float value )
 	case PT_STROBE:       strobe = value; break;
 	case PT_AUDIO:        audioReact = value; break;
 	case PT_TRANSPARENT:  transparent = value > 0.5f; break;
+	case PT_FFT:
+		// FFT data arrives as buffer elements; the host still sets a default here,
+		// and refusing it would make the host destroy the instance.
+		break;
 	case PT_PATTERN_CHANGE: patternChange = value; break;
 	case PT_COLOR_CHANGE:   colorChange = value; break;
 	default:
